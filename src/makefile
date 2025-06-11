@@ -4,7 +4,7 @@ SRC = img_prc.c
 
 CC = gcc
 
-CFLAGS = -Wall -I. -lm
+CFLAGS = -I. -lm
 
 build:$(OUT)
 

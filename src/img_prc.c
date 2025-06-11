@@ -5,6 +5,8 @@
 #include "stb/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb/stb_image_resize.h"
 
 int main(void){
   int width,height,channels;
@@ -14,35 +16,43 @@ int main(void){
     exit(1);
   }
   printf("image loaded width of %dpx, a height of %dpx and %d channels\n",width,height,channels);
-  //manipulating pixel data
-  size_t img_size=width * height * channels;
-  // ternary -> condition ? value_if_true : value_if_false;
-  int gray_channels=4?2:1;
-  size_t gray_img_size=width * height * gray_channels;
+  //resizing image
+   const int resized_w = 32, resized_h = 32;
+   unsigned char *resized_img = malloc(resized_w * resized_h * channels); 
 
+    if(!resized_img) {
+    printf("unable to allocate memory for the rezie img\n");
+    exit(1);
+   }
+
+  //resizing the image to 32*32
+   stbir_resize_uint8(img, width, height, 0,
+                       resized_img, resized_w, resized_h, 0,
+                       channels);
+
+  int gray_channels=4?2:1;      // ternary -> condition ? value_if_true : value_if_false;
+  size_t gray_img_size=resized_w*resized_h*gray_channels;
   unsigned char *gray_img=malloc(gray_img_size);
   if(!gray_img) {
     printf("unable to allocat memory for the gray IMAGE. \n");
     exit(1);
   }
-  for(unsigned char *pi = img,*pg=gray_img;pi!=img+img_size;pi+=channels,pg+=gray_channels)
-    {
-      //gry_img:1byte RGBA_img:4byts  1 byt->4 bytes avg
-      *pg=(uint8_t)((*pi+*(pi+1)+*(pi+2))/3.0);
 
-      if (channels == 4 && gray_channels == 2) {
-        *(pg+1)=*(pi+3);
-        }
-  }
+ for (int i = 0; i < resized_w * resized_h; ++i) {
+        int r = resized_img[i * channels + 0];
+        int g = resized_img[i * channels + 1];
+        int b = resized_img[i * channels + 2];
+        gray_img[i] = (uint8_t)((r + g + b) / 3);
+    }
 
+  stbi_write_png("images/out_gray32x32.png", resized_w, resized_h, 1, gray_img, resized_w);
 
+    printf(" Resized and grayscale image saved as images/gray32x32.png\n");
 
-  //takes the raw pixel buffer and makes in to the .png 
-  //stride_in_bytes=width * channels (no.of bytes between each row )
-  stbi_write_png("images/output.png", width, height, gray_channels, gray_img, width * gray_channels);
-  stbi_image_free(img);
+    stbi_image_free(img);
+    free(resized_img);
+    free(gray_img);
 
+    return 0;
 }
-
-
 
