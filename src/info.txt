@@ -18,3 +18,34 @@ consine transform
 co-ef
 
 
+=====Frequecncu components in Images=====
+high-frequency ->rapid change
+low-frequency ->graduall change/smother changes
+
+real world images ->low_req most of the cases
+the human visual system is less sensitive to high_freq detail
+
+
+========How to get get frequecy components high/low============
+
+Discrete cosine transform (DCT)
+
+dct takes input the sample from the original signal -> outputs the same size 
+called DCT coffiecients
+
+this coefficient represents the contrubution of different signal that gives back original signal
+
+
+for example when you input the dct with cosine wave 
+you get only single non-zero value (coeff) bcz there is only one signal 
+contributing that is cos wave itself
+
+as amplitude changes -> so do the coffieciet 
+shifting up or down along y-axis -> effects zeroth index of ouput wave
+frequency changes -> coffiecient index changes
+
+cos(x)-> X1
+cos(2x)-> X2
+cos(kx)->Xk
+
+
