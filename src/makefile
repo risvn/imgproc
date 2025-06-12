@@ -1,6 +1,6 @@
-OUT = bin_img_prc
+OUT = bin
 
-SRC = img_prc.c
+SRC = main.c
 
 CC = gcc
 

@@ -1,5 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include <stdint.h>
+#include <string.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
@@ -45,7 +47,7 @@ int main(void){
   }
   printf("image loaded width of %dpx, a height of %dpx and %d channels\n",width,height,channels);
   //resizing image
-   const int resize= 8;
+   const int resize= 32;
    unsigned char *resized_img = malloc(resize*resize * channels); 
 
     if(!resized_img) {
@@ -58,8 +60,7 @@ int main(void){
                        resized_img, resize,resize, 0,
                        channels);
 
-  int gray_channels=4?2:1;      // ternary -> condition ? value_if_true : value_if_false;
-  size_t gray_img_size=resize*resize*gray_channels;
+  size_t gray_img_size=resize*resize;
   unsigned char *gray_img=malloc(gray_img_size);
   if(!gray_img) {
     printf("unable to allocat memory for the gray IMAGE. \n");
@@ -89,27 +90,73 @@ printf("Resized grayscale image saved to images/out_gray32x32.png\n");
       }
   }
 
-    
-
-
-
 
     // Apply DCT
     double dct_output[resize][resize];
     dct_2d(resize, matrix, dct_output);
 
 
+  //extracting low frequecy co-eff values form dct 2
+  int dct_size = 8;
+  double low_freq[dct_size][dct_size];
+  for(int i=0;i<dct_size;i++){
+    for(int j=0;i<dct_size;i++){
+      low_freq[i][j]=dct_output[i][j];
+    }
+  }
 
 
-  
-    // Print DCT Matrix
-    printf("\nDCT Matrix (%dx%d):\n", resize, resize);
-    for (int i = 0; i < resize; i++) {
-        for (int j = 0; j < resize; j++) {
-            printf("%8.2f ", dct_output[i][j]);
+ // Optional: print extracted low-frequency DCT block
+    printf("\nTop-left 8x8 Low-Frequency DCT Block:\n");
+    for (int i = 0; i < dct_size; i++) {
+        for (int j = 0; j < dct_size; j++) {
+            printf("%8.2f ", low_freq[i][j]);
         }
         printf("\n");
+  }
+ 
+
+  //computing the average value from the 63 values of low frequecy dct
+      double sum = 0.0;
+int count = 0;
+
+for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+        if (i == 0 && j == 0) continue;  // skip DC coefficient
+        sum += low_freq[i][j];
+        count++;
     }
+}
+
+double mean = sum / count;
+printf("Mean of 63 DCT values (excluding DC): %.2f\n", mean);
+
+
+// Input: double dct[8][8], double mean
+// Output: 64-bit hash as a bitstring
+char hash[65];  // 64 bits + null terminator
+hash[64] = '\0';
+
+int bit = 0;
+for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+        if (low_freq[i][j] >= mean) {
+            hash[bit++] = '1';
+        } else {
+            hash[bit++] = '0';
+        }
+    }
+}
+
+printf("pHash: %s\n", hash);
+
+
+
+
+
+
+
+
 
     // Clean up
     stbi_image_free(img);
