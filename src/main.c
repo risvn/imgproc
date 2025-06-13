@@ -12,6 +12,11 @@
 
 
 
+struct img_data
+{
+  uint64_t phash;
+  char name[64];
+};
 
 //applying dct transform
 #include <math.h>
@@ -51,9 +56,9 @@ unsigned int hamming_dist(uint64_t hash1,uint64_t hash2){
   }
 
 
-int main(void){
+uint64_t phash(char path[]){
   int width,height,channels;
-  unsigned char *img=stbi_load("images/img1.png",&width,&height,&channels,0);
+  unsigned char *img=stbi_load(path,&width,&height,&channels,0);
   if(img==NULL) {
     printf("ERROR while loading");
     exit(1);
@@ -147,31 +152,41 @@ printf("Mean of 63 DCT values (excluding DC): %.2f\n", mean);
 
 // Input: double dct[8][8], double mean
 // Output: 64-bit hash as a bitstring
-char hash[65];  // 64 bits + null terminator
-hash[64] = '\0';
 
+
+uint64_t hash = 0;
 int bit = 0;
+
 for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
-        if (low_freq[i][j] >= mean) {
-            hash[bit++] = '1';
-        } else {
-            hash[bit++] = '0';
+        if (i == 0 && j == 0) continue;  // skip DC if you want
+        if (low_freq[i][j] < mean) {
+            hash |= (1ULL << bit);  // set bit to 1 if value < mean
         }
+        // else leave bit as 0 (default)
+        bit++;
     }
 }
 
-printf("pHash: %s\n", hash);
 
 
-
-
-
+  
 
     // Clean up
     stbi_image_free(img);
     free(resized_img);
     free(gray_img);
+
+    return hash;
+}
+
+
+int main(void) {
+    uint64_t img_1= phash("images/img1.png");
+    uint64_t img_2 = phash("images/img2.png");
+    int dist = hamming_dist(img_1,img_2);
+    printf("%d",dist);
+
 
     return 0;
 }

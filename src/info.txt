@@ -2,21 +2,6 @@
 discrete cosine transform
 ====================================================================================================
 
- image comprassing 
-
- cosine func
- <1 to -1>
-
- when we add different cosine waves with different freq it results in the complex wave which
- is sum of two
-
- we can do weighted sum to have a little more sensitive to particular wave
-
-//so essientially the jpg compression is gitting rid of high frequiecy waves
-divide each image in to 8*8 pixel groups and those can be represented in 
-consine transform
-co-ef
-
 
 =====Frequecncu components in Images=====
 high-frequency ->rapid change
