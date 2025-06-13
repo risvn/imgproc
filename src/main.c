@@ -185,9 +185,15 @@ int main(void) {
     uint64_t img_1= phash("images/img1.png");
     uint64_t img_2 = phash("images/img2.png");
     int dist = hamming_dist(img_1,img_2);
-    printf("%d",dist);
 
+    double normalized_dist=(double)dist/64;
+    double percentage = (1-normalized_dist)*100;
+    printf("hamming distance %d\n",dist);
 
+    double threshould=0.25;
+    if(normalized_dist<threshould){
+    printf("the image is matched percentage %.2f\n",percentage);
+  }
     return 0;
 }
 
