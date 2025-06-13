@@ -100,7 +100,7 @@ printf("Resized grayscale image saved to images/out_gray32x32.png\n");
   int dct_size = 8;
   double low_freq[dct_size][dct_size];
   for(int i=0;i<dct_size;i++){
-    for(int j=0;i<dct_size;i++){
+    for(int j=0;j<dct_size;j++){
       low_freq[i][j]=dct_output[i][j];
     }
   }
