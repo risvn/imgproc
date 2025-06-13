@@ -38,6 +38,19 @@ void dct_2d(int N, double input[N][N], double output[N][N]) {
 
 
 
+
+
+unsigned int hamming_dist(uint64_t hash1,uint64_t hash2){
+    uint64_t x = hash1 ^ hash2;
+    unsigned int dist =0;
+    while(x){
+    dist +=x &1;
+    x>>=1;
+    }
+    return dist;
+  }
+
+
 int main(void){
   int width,height,channels;
   unsigned char *img=stbi_load("images/img1.png",&width,&height,&channels,0);
@@ -149,9 +162,6 @@ for (int i = 0; i < 8; i++) {
 }
 
 printf("pHash: %s\n", hash);
-
-
-
 
 
 
