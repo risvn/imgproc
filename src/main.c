@@ -127,13 +127,13 @@ printf("Resized grayscale image saved to images/out_gray32x32.png\n");
 
 
  // Optional: print extracted low-frequency DCT block
-    printf("\nTop-left 8x8 Low-Frequency DCT Block:\n");
-    for (int i = 0; i < dct_size; i++) {
-        for (int j = 0; j < dct_size; j++) {
-            printf("%8.2f ", low_freq[i][j]);
-        }
-        printf("\n");
-  }
+//    printf("\nTop-left 8x8 Low-Frequency DCT Block:\n");
+//    for (int i = 0; i < dct_size; i++) {
+//        for (int j = 0; j < dct_size; j++) {
+//            printf("%8.2f ", low_freq[i][j]);
+//        }
+//        printf("\n");
+//  }
  
 
   //computing the average value from the 63 values of low frequecy dct
@@ -183,8 +183,11 @@ for (int i = 0; i < 8; i++) {
 }
 
 
+
 int main(void) {
 
+  struct img_data images[MAX_IMAGES];
+  int img_count = 0;
     //opening the dir
   DIR *dir;
   struct dirent *entry;
@@ -195,6 +198,17 @@ int main(void) {
   {
     if(entry->d_type==DT_REG){
     printf("%s\n",entry->d_name);
+    
+
+       char filepath[512];
+        snprintf(filepath, sizeof(filepath), "images/%s", entry->d_name);
+
+        uint64_t hash = phash(filepath);
+
+        images[img_count].phash = hash;
+        strncpy(images[img_count].name, entry->d_name, sizeof(images[img_count].name) - 1);
+        images[img_count].name[sizeof(images[img_count].name) - 1] = '\0';
+        img_count++;
 
     }
   }
@@ -205,7 +219,23 @@ int main(void) {
   }
 
 
+  double threshold = 0.25;
 
+for (int i = 0; i < img_count; i++) {
+    for (int j = i + 1; j < img_count; j++) {
+        unsigned int dist = hamming_dist(images[i].phash, images[j].phash);
+        double normalized = dist / 63.0;
+        double percentage = (1.0 - normalized) * 100.0;
+        if (normalized < threshold) {
+
+             printf("Match: %s ↔ %s (Hamming: %u, Normalized: %.3f, Percentage: %.2f%%)\n",
+           images[i].name, images[j].name, dist, normalized, percentage);
+
+
+        }
+    }
+}
+ 
 
 
 
