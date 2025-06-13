@@ -14,7 +14,7 @@
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize.h"
 
-#define MAX_IMAGES 1000
+#define MAX_IMAGES 10000
 
 
 struct img_data
@@ -67,7 +67,7 @@ uint64_t phash(char path[]){
   }
   printf("image loaded width of %dpx, a height of %dpx and %d channels\n",width,height,channels);
   //resizing image
-   const int resize= 32;
+   const int resize= 8;
    unsigned char *resized_img = malloc(resize*resize * channels); 
 
     if(!resized_img) {
@@ -97,8 +97,8 @@ uint64_t phash(char path[]){
 
 
  // Write grayscale output image
-stbi_write_png("images/out_gray32x32.png", resize, resize, 1, gray_img, resize);
-printf("Resized grayscale image saved to images/out_gray32x32.png\n");
+stbi_write_png("images/out_gray8x8.png", resize, resize, 1, gray_img, resize);
+printf("Resized grayscale image saved to images/out_gray8x8.png\n");
 
 
 
@@ -191,7 +191,7 @@ int main(void) {
     //opening the dir
   DIR *dir;
   struct dirent *entry;
-  dir=opendir("images");
+  dir=opendir("images/");
   if (dir==NULL){return 1;}
   
   while((entry=readdir(dir))!=NULL)
@@ -221,6 +221,9 @@ int main(void) {
 
   double threshold = 0.25;
 
+
+
+//comparing the hashes
 for (int i = 0; i < img_count; i++) {
     for (int j = i + 1; j < img_count; j++) {
         unsigned int dist = hamming_dist(images[i].phash, images[j].phash);
@@ -230,14 +233,18 @@ for (int i = 0; i < img_count; i++) {
 
              printf("Match: %s ↔ %s (Hamming: %u, Normalized: %.3f, Percentage: %.2f%%)\n",
            images[i].name, images[j].name, dist, normalized, percentage);
-
+          
 
         }
     }
 }
- 
 
 
+
+
+    for (int i = 0; i < img_count; i++) {
+    printf("Hash for %s: 0x%016llx\n", images[i].name, (unsigned long long) images[i].phash);
+}
 
 
 //    uint64_t img_1= phash("images/img1.png");
