@@ -2,24 +2,28 @@
 #include<stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <math.h>
+#include <dirent.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
+
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb/stb_image_write.h"
+
 #define STB_IMAGE_RESIZE_IMPLEMENTATION
 #include "stb/stb_image_resize.h"
 
+#define MAX_IMAGES 1000
 
 
 struct img_data
 {
   uint64_t phash;
-  char name[64];
+  char name[512];
 };
 
-//applying dct transform
-#include <math.h>
+
 
 #define PI 3.14159265358979323846
 // DCT function generalized for NxN
@@ -40,8 +44,6 @@ void dct_2d(int N, double input[N][N], double output[N][N]) {
         }
     }
 }
-
-
 
 
 
@@ -182,18 +184,44 @@ for (int i = 0; i < 8; i++) {
 
 
 int main(void) {
-    uint64_t img_1= phash("images/img1.png");
-    uint64_t img_2 = phash("images/img2.png");
-    int dist = hamming_dist(img_1,img_2);
 
-    double normalized_dist=(double)dist/64;
-    double percentage = (1-normalized_dist)*100;
-    printf("hamming distance %d\n",dist);
+    //opening the dir
+  DIR *dir;
+  struct dirent *entry;
+  dir=opendir("images");
+  if (dir==NULL){return 1;}
+  
+  while((entry=readdir(dir))!=NULL)
+  {
+    if(entry->d_type==DT_REG){
+    printf("%s\n",entry->d_name);
 
-    double threshould=0.25;
-    if(normalized_dist<threshould){
-    printf("the image is matched percentage %.2f\n",percentage);
+    }
   }
+  if(closedir(dir)==-1)
+  {
+    printf("error closing dir\n");  
+      return 1;
+  }
+
+
+
+
+
+
+
+//    uint64_t img_1= phash("images/img1.png");
+//    uint64_t img_2 = phash("images/img2.png");
+//    int dist = hamming_dist(img_1,img_2);
+//
+//    double normalized_dist=(double)dist/64;
+//    double percentage = (1-normalized_dist)*100;
+//    printf("hamming distance %d\n",dist);
+//
+//    double threshould=0.25;
+//    if(normalized_dist<threshould){
+//    printf("the image is matched percentage %.2f\n",percentage);
+//  }
     return 0;
 }
 

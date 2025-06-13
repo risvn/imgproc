@@ -33,4 +33,41 @@ cos(x)-> X1
 cos(2x)-> X2
 cos(kx)->Xk
 
+========================================
+extracting the low-frequecy values
+========================================
+
+after transforming the normal pixel values in to the dct-2
+we can easily extract low frequency values in oder to generate
+hash 
+8*8(low-freq)->mean_value->phash
+compare the hash values of different images and decied weather its 
+similar or not using threshould_value
+
+====================
+file-handling in c
+====================
+
+
+FILE *fh_output;
+fh_output =fopen("io.txt","w"); //if io.txt does not exists it will create new
+
+fputs("string",fh_output);  //string->fh_output file
+
+
+
+fclose(fh_output);//after dealing with the file
+
+
+
+
+
+
+
+
+
+
+
+
+
 
