@@ -15,4 +15,4 @@ clean:
 	rm -f $(OUT)
 
 run: $(OUT)
-		./$(OUT)
+		./$(OUT) -q images/img1.png images

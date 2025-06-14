@@ -25,7 +25,7 @@ struct img_data
 
 struct img_data images[MAX_IMAGES];
 int img_count = 0;
-double threshold = 0.28;
+double threshold = 0.34;
 
 // DCT function generalized for NxN
 void dct_2d(int N, double input[N][N], double output[N][N]) {
@@ -75,7 +75,9 @@ uint64_t phash(char path[])
     exit(1);
   }
 
-  printf("image loaded width of %dpx, a height of %dpx and %d channels\n",width,height,channels);
+
+
+ // printf("image loaded width of %dpx, a height of %dpx and %d channels\n",width,height,channels);
   //resizing image
 
    unsigned char *resized_img = malloc(resize*resize * channels); 
@@ -158,7 +160,7 @@ uint64_t phash(char path[])
     }
     
     double mean = sum / count;
-    printf("Mean of 63 DCT values (excluding DC): %.2f\n", mean);
+   // printf("Mean of 63 DCT values (excluding DC): %.2f\n", mean);
     
     // Input: double dct[8][8], double mean
     // Output: 64-bit hash as a bitstring
@@ -190,8 +192,7 @@ void query_mode(char* filepath,int images_count)
             for (int i=0; i < img_count; i++) 
               {
                  unsigned int dist = hamming_dist(target_hash, images[i].phash);
-                 double normalized = dist / 63.0;
-                 double percentage = (1.0 - normalized) * 100.0;
+                 double normalized = dist / 63.0; double percentage = (1.0 - normalized) * 100.0;
                     if (normalized < threshold) 
                        {
                           printf("Match: %s   (Hamming: %u, Normalized: %.3f, Percentage: %.2f%%)\n",
@@ -200,20 +201,23 @@ void query_mode(char* filepath,int images_count)
               }
 
 }
-int load_dir(void)
+
+
+int load_dir(char* dir_path)
 {
     //opening the dir
     DIR *dir;
     struct dirent *entry;
-    dir=opendir("images/");
+    dir=opendir(dir_path);
 
+    printf("Generating image_hash...\n"); 
     if (dir==NULL){return 1;}
         while((entry=readdir(dir))!=NULL)
         {
           if(entry->d_type==DT_REG){
-          printf("%s\n",entry->d_name);
+          //printf("%s\n",entry->d_name);
              char filepath[512];
-              snprintf(filepath, sizeof(filepath), "images/%s", entry->d_name);
+              snprintf(filepath, sizeof(filepath), "%s/%s", dir_path, entry->d_name);
               uint64_t hash = phash(filepath);
               images[img_count].phash = hash;
               strncpy(images[img_count].name, entry->d_name, sizeof(images[img_count].name) - 1);
@@ -226,49 +230,23 @@ int load_dir(void)
          printf("error closing dir\n");  
          return 1;
      }
-    for (int i = 0; i < img_count; i++) 
-    {
-          printf("Hash for %s: 0x%016llx\n", images[i].name, (unsigned long long) images[i].phash);
-    }
 return 0;
 }
 
 
-int match(void)
-{
-    //comparing the hashes
-    for (int i = 0; i < img_count; i++)
-         {
-          for (int j = i + 1; j < img_count; j++) 
-              {
-                 unsigned int dist = hamming_dist(images[i].phash, images[j].phash);
-                 double normalized = dist / 63.0;
-                 double percentage = (1.0 - normalized) * 100.0;
-                    if (normalized < threshold) 
-                       {
-                          printf("Match: %s ↔ %s (Hamming: %u, Normalized: %.3f, Percentage: %.2f%%)\n",
-                          images[i].name, images[j].name, dist, normalized, percentage);
-                       }
-              }
-          }
-    return 0;
-}
-
-
 int main(int argc,char *argv[]) {
-    load_dir();
 
     if(argc>2 && strcmp(argv[1],"-q")==0)
       {
-        printf("Query mode!\n");
+         printf("Query mode!\n");
          char *query_path = argv[2];
-        printf("Query image: %s\n", query_path);
-        query_mode(query_path,img_count);
-   
-      }else
-      {
-        match(); 
+         char *dir_path = argv[3];
+         printf("[Query image: %s]\n", query_path);
+         printf("Search directory: %s\n", dir_path);
+        load_dir(dir_path);
+         query_mode(query_path,img_count);
       }
+
     return 0;
 }
 
