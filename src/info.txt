@@ -70,4 +70,74 @@ fclose(fh_output);//after dealing with the file
 
 
 
+╔══════════════════════════════════════════════════════════════════════╗
+║                    IMAGE pHASH GENERATION FLOW                       ║
+╚══════════════════════════════════════════════════════════════════════╝
 
+───────────────────────────────────────────────────────────────────────
+1️⃣  LOAD IMAGE
+───────────────────────────────────────────────────────────────────────
+➤ Use `stb_image.h` (or similar library) to load the image:
+    - Any format (PNG, JPG, etc)
+    - Convert to grayscale on load or manually later
+    - Example:
+      image loaded width of 1767px, height of 1326px, channels: 4
+
+───────────────────────────────────────────────────────────────────────
+2️⃣  RESIZE TO 32x32 GRAYSCALE
+───────────────────────────────────────────────────────────────────────
+➤ Resample the image to 32x32 resolution.
+➤ Convert to single channel (grayscale):
+    - Grayscale value = weighted average of RGB
+      (e.g. 0.3*R + 0.59*G + 0.11*B)
+➤ Save this for debug:
+    - Example: `images/out_gray32x32.png`
+
+───────────────────────────────────────────────────────────────────────
+3️⃣  APPLY DCT-II (2D Discrete Cosine Transform)
+───────────────────────────────────────────────────────────────────────
+➤ Perform DCT on the 32x32 grayscale matrix:
+    - Break down image into frequency components
+    - Most energy is in low-frequency (top-left) region
+
+➤ Extract top-left 8x8 DCT block:
+    Example matrix:
+    ┌───────────────────────────────┐
+    │ 17113.37   182.30  -2363.51   │
+    │ -889.65    317.98   733.70    │
+    │ -4582.14  -343.59   370.11    │
+    │  ...                           │
+    └───────────────────────────────┘
+
+───────────────────────────────────────────────────────────────────────
+4️⃣  CALCULATE pHASH
+───────────────────────────────────────────────────────────────────────
+➤ Compute mean of the 63 DCT values (exclude DC term at [0][0])
+    Example: Mean = -191.12
+
+➤ For each of 64 values (or just 63 + DC if desired):
+    - Set bit to 1 if DCT value > mean
+    - Set bit to 0 otherwise
+
+➤ Combine bits into `uint64_t` hash:
+    Example: 0xa3b29c88ef45d012
+
+───────────────────────────────────────────────────────────────────────
+5️⃣  COMPARE HASHES
+───────────────────────────────────────────────────────────────────────
+➤ Compute Hamming distance between two hashes:
+    - Count differing bits
+    - Normalize = dist / 64
+    - Similarity % = (1 - normalized) * 100
+
+───────────────────────────────────────────────────────────────────────
+✔ This method is robust to:
+    - Scaling
+    - Color changes
+    - Minor crops or noise
+
+✘ It is weak against:
+    - Major crops (large portion missing)
+    - Severe distortions or rotations
+───────────────────────────────────────────────────────────────────────
+for more informaion refer this blog: https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html
