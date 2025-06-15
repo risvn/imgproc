@@ -223,6 +223,7 @@ int load_dir(char* dir_path)
               strncpy(images[img_count].name, entry->d_name, sizeof(images[img_count].name) - 1);
               images[img_count].name[sizeof(images[img_count].name) - 1] = '\0';
               img_count++;
+              printf(" %d %s loaded....\n", img_count,entry->d_name);
             }
         }
    if(closedir(dir)==-1)

@@ -68,6 +68,12 @@ Compare a query image:
     ./bin -q myphoto.jpg images
 
 ─────────────────────────────────────────────────────────────
+TOOLS:
+-----
+This tool was written as a perceptual image hashing project in C using:
+- STB image library (load, resize, save)
+- Custom DCT and pHash calculation
+- Hamming distance for comparison
 
 NOTES:
 ------
@@ -79,10 +85,6 @@ NOTES:
 
 AUTHOR:
 -------
-This tool was written as a perceptual image hashing project in C using:
-- STB image library (load, resize, save)
-- Custom DCT and pHash calculation
-- Hamming distance for comparison
-
-─────────────────────────────────────────────────────────────
-                                                            last updated:jun 15 2025
+rsvn
+last updated on:
+        jun 15 2025                                                 
