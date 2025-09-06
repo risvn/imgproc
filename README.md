@@ -1,5 +1,5 @@
 ─────────────────────────────────────────────────────────────
-       IMAGE pHash SIMILARITY TOOL - USAGE GUIDE
+       SIMILARITY TOOL - USAGE GUIDE
 ─────────────────────────────────────────────────────────────
 
 DESCRIPTION:
@@ -26,7 +26,6 @@ BASIC USAGE:
 - Compare every pair
 - Print similar images (if similarity exceeds threshold)
 
-─────────────────────────────────────────────────────────────
 
 2️⃣ Query mode: compare a single image against a directory
 ```bash
@@ -43,7 +42,6 @@ Example:
 - Compare it against all images in images/
 - Print similar matches
 
-─────────────────────────────────────────────────────────────
 
 3️⃣ Planned classify mode: group similar images into folders (future feature)
 
@@ -51,7 +49,6 @@ Example:
 
 (coming soon)
 
-─────────────────────────────────────────────────────────────
 
 OPTIONS:
 --------
@@ -67,7 +64,7 @@ Compare images inside a folder:
 Compare a query image:
     ./bin -q myphoto.jpg images
 
-─────────────────────────────────────────────────────────────
+
 TOOLS:
 -----
 This tool was written as a perceptual image hashing project in C using:
