@@ -83,8 +83,13 @@ NOTES:
 
 ─────────────────────────────────────────────────────────────
 
+Resources:
+-------
+Check out the [Blog](https://www.hackerfactor.com/blog/index.php?/archives/432-Looks-Like-It.html).
+
+
 AUTHOR:
 -------
 rsvn
 last updated on:
-        jun 15 2025                                                 
+        sep 06 2025                                                 
